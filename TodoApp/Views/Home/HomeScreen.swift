@@ -9,9 +9,9 @@ import SwiftUI
 
 public struct HomeScreen: View {
     public var body: some View {
-        ZStack(alignment: .center) {
+        GeometryReader { geometry in
             ScrollView {
-                
+                SummaryInfo(containerWidth: geometry.size.width)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay {
