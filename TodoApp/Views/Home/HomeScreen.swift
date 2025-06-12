@@ -12,6 +12,11 @@ public struct HomeScreen: View {
         GeometryReader { geometry in
             ScrollView {
                 SummaryInfo(containerWidth: geometry.size.width)
+                LazyVStack {
+                    ForEach(0..<2, id: \.self) { _ in
+                        TaskItem()
+                    }
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay {
