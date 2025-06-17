@@ -13,7 +13,7 @@ struct iOSCheckbox: ToggleStyle {
             configuration.isOn.toggle()
         }, label: {
             HStack {
-                Image(systemName: configuration.isOn ? "checkmark.square" : "square")
+                Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
                     .resizable()
                     .frame(width: 24, height: 24)
                     .foregroundStyle(.primary)

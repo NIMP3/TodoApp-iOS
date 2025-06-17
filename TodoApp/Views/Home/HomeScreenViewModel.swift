@@ -8,5 +8,30 @@
 import Foundation
 
 @Observable class HomeScreenViewModel {
+    var state: HomeDataState = HomeDataState()
+    private let dataSource: TaskLocalDataSource
+    
+    init(dataSource: TaskLocalDataSource) {
+        self.dataSource = dataSource
+        loadData()
+    }
+    
+    private func loadData() {
+        let formatter = DateFormatter()
+        formatter.locale = Locale.current
+        formatter.dateFormat = "EE, MMMM, dd, yyyy"
+        state.date = formatter.string(from: Date())
+        
+        state.completedTasks = dataSource.tasks
+            .filter { $0.isCompleted }
+            .sorted(by: { $0.date < $1.date })
+        
+        state.pendingTasks = dataSource.tasks
+            .filter { !$0.isCompleted }
+            .sorted(by: { $0.date < $1.date })
+        
+        state.summary = "\(state.pendingTasks) incomplete, \(state.completedTasks) completed)"
+        
+    }
     
 }

@@ -8,50 +8,60 @@
 import SwiftUI
 
 public struct TaskItem: View {
-    @State private var isOn = false
+    @State var task: Task
     
     public var body: some View {
         VStack(alignment: .trailing){
             HStack{
-                Toggle(isOn: $isOn){}
+                Toggle(isOn: $task.isCompleted){}
                     .toggleStyle(iOSCheckbox())
                     .padding(6)
                 
                 VStack(alignment: .leading){
-                    Text("I need to send my personal CV.")
+                    Text(task.title)
                         .font(.headline)
                         .foregroundStyle(.primary)
                         .fontWeight(.medium)
                         .padding(.bottom, 4)
                     
-                    Text("I need to send my personal CV because I want to apply for a new job.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    if !task.isCompleted, let description = task.description {
+                        Text(description)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 Image(systemName: "trash.fill")
                     .resizable()
-                    .frame(width: 24, height: 24)
+                    .frame(width: 18, height: 18)
                     .foregroundStyle(.primary)
                     .padding(6)
             }
             .padding(EdgeInsets(top: 12, leading: 12, bottom: 8, trailing: 12))
             
-            Text("PERSONAL")
-                .font(.footnote)
-                .foregroundStyle(.white)
-                .fontWeight(.medium)
-                .padding(6)
-                .background(.cyan)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
-                .padding(12)
+            if !task.isCompleted, let category = task.category?.rawValue {
+                Text(category)
+                    .font(.footnote)
+                    .foregroundStyle(.white)
+                    .fontWeight(.medium)
+                    .padding(6)
+                    .background(.cyan)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .padding(12)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(8)
         .background(.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .padding(12)
     }
 }
 
 #Preview {
-    TaskItem()
+    TaskItem(
+        task: Task(title: "I have to write my CV",
+                   description: "I have to write my curriculum vitae in English because. I need to apply to new opportunities",
+                   isCompleted: true,
+                   category: .PERSONAL))
 }
