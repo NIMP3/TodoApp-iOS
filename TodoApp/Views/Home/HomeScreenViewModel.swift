@@ -34,4 +34,17 @@ import Foundation
         
     }
     
+    func addTask() {
+        let tasks = FakeTaskLocalDataSource().tasks
+        let random = Int.random(in: 0..<tasks.count)
+        let task = tasks[random]
+        
+        do {
+            try dataSource.addTask(task: task)
+            loadData()
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
 }

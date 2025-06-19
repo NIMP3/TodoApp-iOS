@@ -6,8 +6,15 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		6AEC045A2E0453EE002A25F8 /* TaskEntity+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEC04582E0453EE002A25F8 /* TaskEntity+CoreDataClass.swift */; };
+		6AEC045B2E0453EE002A25F8 /* TaskEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6AEC04592E0453EE002A25F8 /* TaskEntity+CoreDataProperties.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		6A616F922DEFAD37000CD350 /* TodoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6AEC04582E0453EE002A25F8 /* TaskEntity+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TaskEntity+CoreDataClass.swift"; path = "TodoApp/Data/TaskEntity+CoreDataClass.swift"; sourceTree = "<group>"; };
+		6AEC04592E0453EE002A25F8 /* TaskEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TaskEntity+CoreDataProperties.swift"; path = "TodoApp/Data/TaskEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,6 +39,8 @@
 		6A616F892DEFAD37000CD350 = {
 			isa = PBXGroup;
 			children = (
+				6AEC04582E0453EE002A25F8 /* TaskEntity+CoreDataClass.swift */,
+				6AEC04592E0453EE002A25F8 /* TaskEntity+CoreDataProperties.swift */,
 				6A616F942DEFAD37000CD350 /* TodoApp */,
 				6A616F932DEFAD37000CD350 /* Products */,
 			);
@@ -119,6 +128,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6AEC045A2E0453EE002A25F8 /* TaskEntity+CoreDataClass.swift in Sources */,
+				6AEC045B2E0453EE002A25F8 /* TaskEntity+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
