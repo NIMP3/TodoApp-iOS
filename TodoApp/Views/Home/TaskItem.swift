@@ -9,11 +9,20 @@ import SwiftUI
 
 public struct TaskItem: View {
     @State var task: Task
+    var onDelete: (() -> Void)?
+    var onToggle: ((Task) -> Void)?
     
     public var body: some View {
         VStack(alignment: .trailing){
             HStack{
-                Toggle(isOn: $task.isCompleted){}
+                Toggle("", isOn: Binding<Bool>(
+                        get: { task.isCompleted },
+                        set: { newValue in
+                            var updated = task
+                            updated.isCompleted = newValue
+                            onToggle?(updated)
+                        }
+                    ))
                     .toggleStyle(iOSCheckbox())
                     .padding(6)
                 
@@ -32,11 +41,14 @@ public struct TaskItem: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Image(systemName: "trash.fill")
-                    .resizable()
-                    .frame(width: 18, height: 18)
-                    .foregroundStyle(.primary)
-                    .padding(6)
+                Button { onDelete?() }
+                label: {
+                    Image(systemName: "trash.fill")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                        .foregroundStyle(.primary)
+                        .padding(6)
+                }
             }
             .padding(EdgeInsets(top: 12, leading: 12, bottom: 8, trailing: 12))
             

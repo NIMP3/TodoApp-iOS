@@ -9,19 +9,22 @@ import SwiftUI
 
 public struct TaskScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @State var viewModel: TaskScreenViewModel
     
     public var body: some View {
+        let category = viewModel.state.category?.rawValue ?? "CATEGORY"
+        
         VStack {
             HStack {
                 Text("Done")
                     .padding(8)
-                Toggle(isOn: .constant(true), label: {})
+                Toggle(isOn: $viewModel.state.isTaskDone, label: {})
                     .toggleStyle(iOSCheckbox())
                 
                 Spacer()
                 
                 HStack {
-                    Text("CATEGORY")
+                    Text(category)
                         .font(.headline)
                         .padding(8)
                     
@@ -36,14 +39,14 @@ public struct TaskScreen: View {
             .padding(.bottom, 24)
             
             TextField("Write a task",
-                      text: .constant("I have to do my homework"),
+                      text: $viewModel.state.taskName,
                       axis: .vertical)
                 .font(.system(size: 36, weight: .medium))
                 .lineLimit(2)
                 .padding(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
             
             TextField("Write a description",
-                      text: .constant("I have to do my homework for the next week"),
+                      text: $viewModel.state.taskDescription,
                       axis: .vertical)
                 .font(.system(size: 20, weight: .regular))
                 .lineLimit(5)
@@ -52,7 +55,7 @@ public struct TaskScreen: View {
             
             Spacer()
             
-            Button(action: { }) {
+            Button(action: { viewModel.saveTask() }) {
                 Text("SAVE")
                     .font(.headline)
                     .foregroundColor(.white)
@@ -67,6 +70,11 @@ public struct TaskScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .padding(16)
+        .onChange(of: viewModel.didSave, { _, newValue in
+            guard newValue else { return }
+            viewModel.didSave = false
+            dismiss()
+        })
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button { dismiss() }
@@ -82,6 +90,9 @@ public struct TaskScreen: View {
 
 #Preview {
     NavigationView {
-        TaskScreen()
+        TaskScreen(
+            viewModel: TaskScreenViewModel(
+                id: nil,
+                dataSource: FakeTaskLocalDataSource()))
     }
 }

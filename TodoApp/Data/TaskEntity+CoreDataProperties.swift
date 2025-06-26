@@ -36,7 +36,7 @@ extension TaskEntity : Identifiable {
                     title: title,
                     description: self.contentDescription,
                     isCompleted: self.isCompleted,
-                    category: .WORK,
+                    category: Category(rawValue: self.category ?? ""),
                     date: date)
     }
 }

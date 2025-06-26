@@ -5,7 +5,12 @@
 //  Created by Edwin Yovany on 9/06/25.
 //
 
+import Combine
+
 class FakeTaskLocalDataSource: TaskLocalDataSource {
+    private let subject = CurrentValueSubject<[Task], Never>([])
+    var tasksPublisher: AnyPublisher<[Task], Never> { subject.eraseToAnyPublisher() }
+    
     var tasks: [Task]
     private var completedTasks: [Task] = []
     private var pendingTasks: [Task] = []

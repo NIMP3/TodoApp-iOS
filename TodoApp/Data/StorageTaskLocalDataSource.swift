@@ -6,10 +6,35 @@
 //
 
 import CoreData
+import Combine
 
-class StorageTaskLocalDataSource: TaskLocalDataSource {
+class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
+    private let subject = CurrentValueSubject<[Task], Never>([])
+    var tasksPublisher: AnyPublisher<[Task], Never> { subject.eraseToAnyPublisher() }
+    
     private let container: NSPersistentContainer = TodoPersistenceManager.shared.container
     private var viewContext: NSManagedObjectContext { container.viewContext }
+    
+    private lazy var frc: NSFetchedResultsController<TaskEntity> = {
+        let req: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
+        req.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        
+        let c = NSFetchedResultsController(
+            fetchRequest: req,
+            managedObjectContext: viewContext,
+            sectionNameKeyPath: nil,
+            cacheName: nil)
+        
+        c.delegate = self
+        try? c.performFetch()                              // primera carga
+        subject.send((c.fetchedObjects ?? []).compactMap({ entity in entity.toDomain() }))
+        return c
+    }()
+    
+    override init() {
+        super.init()
+        _ = frc
+    }
     
     var tasks: [Task] {
         let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
@@ -97,4 +122,11 @@ class StorageTaskLocalDataSource: TaskLocalDataSource {
         return entity
     }
     
+}
+
+extension StorageTaskLocalDataSource: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        let objects = (controller.fetchedObjects as? [TaskEntity]) ?? []
+        subject.send(objects.compactMap({ entity in entity.toDomain() }))
+    }
 }
