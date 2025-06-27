@@ -10,10 +10,60 @@ import SwiftUI
 public struct TaskScreen: View {
     @Environment(\.dismiss) private var dismiss
     @State var viewModel: TaskScreenViewModel
+    @State private var showDropDown: Bool = false
+    @State private var selectedOptionIndex: Int? = nil
+    
+    private let categories = Category.allCases.map(\.rawValue)
     
     public var body: some View {
-        let category = viewModel.state.category?.rawValue ?? "CATEGORY"
-        
+        ZStack {
+            if showDropDown {
+                DropDownMenu(options: categories,
+                             onItemSelected: { index in
+                                 selectedOptionIndex = index
+                                 viewModel.state.category = Category(rawValue: categories[index])
+                                 showDropDown = false
+                             },
+                             selectedOptionIndex: $selectedOptionIndex)
+                    .zIndex(1)
+                    .offset(y: 46)
+            }
+
+            TaskScreenForm(viewModel: viewModel, showDropDown: $showDropDown)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .navigationTitle("Task")
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .padding(16)
+        .onChange(of: viewModel.didSave, { _, newValue in
+            guard newValue else { return }
+            viewModel.didSave = false
+            dismiss()
+        })
+        .onAppear {
+            if let category = viewModel.state.category {
+                selectedOptionIndex = categories.firstIndex(of: category.rawValue)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button { dismiss() }
+                label : {
+                    Image(systemName: "chevron.backward")
+                        .font(.title3.weight(.semibold))
+                        .tint(.primary)
+                }
+            }
+        }
+    }
+}
+
+public struct TaskScreenForm: View {
+    @StateObject var viewModel: TaskScreenViewModel
+    @Binding var showDropDown: Bool
+    
+    public var body: some View {
         VStack {
             HStack {
                 Text("Done")
@@ -22,19 +72,10 @@ public struct TaskScreen: View {
                     .toggleStyle(iOSCheckbox())
                 
                 Spacer()
-                
-                HStack {
-                    Text(category)
-                        .font(.headline)
-                        .padding(8)
-                    
-                    Image(systemName: "chevron.down")
-                }
-                .padding(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 6)
-                        .stroke(.primary, lineWidth: 1)
-                }
+
+                DropDownLabel(placeholder: viewModel.state.category?.rawValue ?? "CATEGORY",
+                               showDropDown: $showDropDown)
+            
             }
             .padding(.bottom, 24)
             
@@ -61,30 +102,39 @@ public struct TaskScreen: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
-                    .background(Color.blue)
+                    .background(viewModel.state.canSaveTask ? Color.blue : Color.gray)
                     .cornerRadius(16)
             }
+            .disabled(!viewModel.state.canSaveTask)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .navigationTitle("Task")
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .padding(16)
-        .onChange(of: viewModel.didSave, { _, newValue in
-            guard newValue else { return }
-            viewModel.didSave = false
-            dismiss()
-        })
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button { dismiss() }
-                label : {
-                    Image(systemName: "chevron.backward")
-                        .font(.title3.weight(.semibold))
-                        .tint(.primary)
+    }
+}
+
+struct DropDownLabel: View {
+    let placeholder: String
+    @Binding var showDropDown: Bool
+
+    public var body: some View {
+        Button(action: {
+                withAnimation { showDropDown.toggle() }
+            }, label: {
+                HStack {
+                    Text(placeholder)
+                        .font(.headline)
+                        .foregroundStyle(Color.primary)
+                        .padding(8)
+                    
+                    Image(systemName: "chevron.down")
+                        .padding(8)
+                        .foregroundStyle(Color.primary)
                 }
-            }
-        }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color.primary, lineWidth: 1)
+                }
+            })
+            .padding(.bottom, 6)
     }
 }
 

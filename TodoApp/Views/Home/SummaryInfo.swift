@@ -33,12 +33,12 @@ public struct SummaryInfo: View {
             
             ZStack{
                 Circle()
-                    .stroke(lineWidth: 16)
+                    .stroke(lineWidth: 14)
                     .foregroundStyle(Color(.systemGray5))
                 
                 Circle()
                     .trim(from: 0, to: progress)
-                    .stroke(style: StrokeStyle(lineWidth: 16, lineCap: .round))
+                    .stroke(style: StrokeStyle(lineWidth: 14, lineCap: .round))
                     .rotationEffect(.degrees(-90))
                     .foregroundStyle(Color.accentColor)
                 

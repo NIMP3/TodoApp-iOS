@@ -10,5 +10,7 @@ struct TaskScreenState {
     var taskDescription: String = ""
     var category: Category?
     var isTaskDone: Bool = false
-    var canSaveTask: Bool = false
+    var canSaveTask: Bool {
+        !taskName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
 }
