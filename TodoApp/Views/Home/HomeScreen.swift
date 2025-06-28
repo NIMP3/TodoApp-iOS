@@ -8,14 +8,14 @@
 import SwiftUI
 
 public struct HomeScreen: View {
-    @State var viewModel = HomeScreenViewModel(dataSource: StorageTaskLocalDataSource())
+    @Environment(HomeScreenViewModel.self) private var viewModel
     let onEditTask: (String?) -> Void
     
     public var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .bottomTrailing) {
                 if !viewModel.state.completedTasks.isEmpty || !viewModel.state.pendingTasks.isEmpty {
-                    HomeScreenContent(viewModel: $viewModel,
+                    HomeScreenContent(viewModel: viewModel,
                                       containerWidth: geometry.size.width,
                                       onEditTask: onEditTask)
                 }
@@ -53,7 +53,7 @@ public struct HomeScreen: View {
 }
 
 struct HomeScreenContent: View {
-    @Binding var viewModel: HomeScreenViewModel
+    let viewModel: HomeScreenViewModel
     let containerWidth: CGFloat
     let onEditTask: (String?) -> Void
     
@@ -68,7 +68,7 @@ struct HomeScreenContent: View {
                     containerWidth: containerWidth)
                 
                 SectionTitle(title: "Completed")
-                ForEach(viewModel.state.completedTasks) { task in
+                ForEach(viewModel.state.completedTasks, id: \.id) { task in
                     TaskItem(task: task, onDelete: {
                         viewModel.deleteTask(task: task)
                     }, onToggle: { updatedTask in
@@ -79,7 +79,7 @@ struct HomeScreenContent: View {
                 .padding(EdgeInsets(top: 2, leading: 12, bottom: 2, trailing: 12))
                 
                 SectionTitle(title: "Pending")
-                ForEach(viewModel.state.pendingTasks) { task in
+                ForEach(viewModel.state.pendingTasks, id: \.id) { task in
                     TaskItem(task: task, onDelete: {
                         viewModel.deleteTask(task: task)
                     }, onToggle: { updatedTask in
@@ -114,7 +114,9 @@ struct MessageView: View {
 
 #Preview {
     NavigationView {
-        HomeScreen() { _ in
+        HomeScreen() { id in
+            // Handle edit task action
+            print("Edit task with id: \(id ?? "nil")")
         }
     }
 }

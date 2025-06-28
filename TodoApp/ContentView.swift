@@ -19,7 +19,7 @@ struct ContentView: View {
                 switch route {
                 case .home: EmptyView()
                 case .taskDetail(let id):
-                    TaskScreen(viewModel: TaskScreenViewModel(id: id, dataSource: StorageTaskLocalDataSource()))
+                    TaskScreen(id: id)
                 }
             }
         }

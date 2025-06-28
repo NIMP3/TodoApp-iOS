@@ -9,10 +9,10 @@ import Foundation
 
 struct Task: Identifiable, Equatable {
     var id: String = UUID().uuidString
-    let title: String
-    let description: String?
+    var title: String
+    var description: String?
     var isCompleted: Bool
-    let category: Category?
+    var category: Category?
     var date: Date = Date()
     
     init(title: String, description: String?, isCompleted: Bool = false, category: Category? = nil) {
@@ -29,5 +29,14 @@ struct Task: Identifiable, Equatable {
         self.isCompleted = isCompleted
         self.category = category
         self.date = date
+    }
+
+    static func == (lhs: Task, rhs: Task) -> Bool {
+        return lhs.id == rhs.id &&
+               lhs.title == rhs.title &&
+               lhs.description == rhs.description &&
+               lhs.isCompleted == rhs.isCompleted &&
+               lhs.category == rhs.category &&
+               lhs.date == rhs.date
     }
 }

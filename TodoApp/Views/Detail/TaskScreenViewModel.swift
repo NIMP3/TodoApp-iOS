@@ -8,21 +8,20 @@
 import Foundation
 
 @MainActor
-@Observable class TaskScreenViewModel: ObservableObject {
+@Observable class TaskScreenViewModel {
     var state: TaskScreenState = TaskScreenState()
     var didSave: Bool = false
     
     @ObservationIgnored private let dataSource: TaskLocalDataSource
-    @ObservationIgnored private let id: String?
-    
-    init(id: String?, dataSource: TaskLocalDataSource) {
+    @ObservationIgnored private var id: String? = nil
+
+    init(dataSource: TaskLocalDataSource) {
         self.dataSource = dataSource
-        self.id = id
-        loadData()
     }
-    
-    private func loadData() {
+
+    func loadData(id: String?) {
         guard let id = id else { return }
+        self.id = id
         
         do {
             guard let task = try? dataSource.getTaskById(taskId: id) else { return }
@@ -31,6 +30,7 @@ import Foundation
             state.taskDescription = task.description ?? ""
             state.category = task.category
             state.isTaskDone = task.isCompleted
+            state.date = task.date
         }
     }
     
@@ -41,7 +41,7 @@ import Foundation
                          description: state.taskDescription,
                          isCompleted: state.isTaskDone,
                          category: state.category,
-                         date: Date())
+                         date: isNew ? Date() : state.date)
         
         do {
             if isNew { try dataSource.addTask(task: task) }

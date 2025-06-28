@@ -10,7 +10,6 @@ import Combine
 protocol TaskLocalDataSource {
     var tasksPublisher: AnyPublisher<[Task], Never> { get }
     
-    var tasks: [Task] { get }
     func addTask(task: Task) throws
     func updateTask(task: Task) throws
     func removeTask(task: Task) throws

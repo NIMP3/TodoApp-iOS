@@ -8,9 +8,11 @@
 import CoreData
 import Combine
 
-class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
+final class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
     private let subject = CurrentValueSubject<[Task], Never>([])
     var tasksPublisher: AnyPublisher<[Task], Never> { subject.eraseToAnyPublisher() }
+
+    static let shared = StorageTaskLocalDataSource()
     
     private let container: NSPersistentContainer = TodoPersistenceManager.shared.container
     private var viewContext: NSManagedObjectContext { container.viewContext }
@@ -26,7 +28,7 @@ class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
             cacheName: nil)
         
         c.delegate = self
-        try? c.performFetch()                              // primera carga
+        try? c.performFetch()
         subject.send((c.fetchedObjects ?? []).compactMap({ entity in entity.toDomain() }))
         return c
     }()
@@ -34,20 +36,6 @@ class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
     override init() {
         super.init()
         _ = frc
-    }
-    
-    var tasks: [Task] {
-        let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
-        request.sortDescriptors = [ NSSortDescriptor(key: "date", ascending: true) ]
-        request.returnsObjectsAsFaults = false
-        
-        do {
-            let entities = try viewContext.fetch(request)
-            return entities.compactMap { $0.toDomain() }
-        } catch {
-            print("Error when fetching tasks from CoreData: \(error.localizedDescription)")
-            return []
-        }
     }
     
     func addTask(task: Task) throws {
@@ -127,6 +115,10 @@ class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
 extension StorageTaskLocalDataSource: NSFetchedResultsControllerDelegate {
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         let objects = (controller.fetchedObjects as? [TaskEntity]) ?? []
-        subject.send(objects.compactMap({ entity in entity.toDomain() }))
+        let newTasks = objects.compactMap({ entity in entity.toDomain() })
+
+        if subject.value != newTasks {
+            subject.send(newTasks)
+        }
     }
 }

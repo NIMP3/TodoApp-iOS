@@ -8,8 +8,10 @@
 import SwiftUI
 
 public struct TaskScreen: View {
+    let id: String?
+
     @Environment(\.dismiss) private var dismiss
-    @State var viewModel: TaskScreenViewModel
+    @Environment(TaskScreenViewModel.self) private var viewModel
     @State private var showDropDown: Bool = false
     @State private var selectedOptionIndex: Int? = nil
     
@@ -42,6 +44,7 @@ public struct TaskScreen: View {
             dismiss()
         })
         .onAppear {
+            viewModel.loadData(id: id)
             if let category = viewModel.state.category {
                 selectedOptionIndex = categories.firstIndex(of: category.rawValue)
             }
@@ -60,7 +63,7 @@ public struct TaskScreen: View {
 }
 
 public struct TaskScreenForm: View {
-    @StateObject var viewModel: TaskScreenViewModel
+    let viewModel: TaskScreenViewModel
     @Binding var showDropDown: Bool
     
     public var body: some View {
@@ -68,7 +71,10 @@ public struct TaskScreenForm: View {
             HStack {
                 Text("Done")
                     .padding(8)
-                Toggle(isOn: $viewModel.state.isTaskDone, label: {})
+                Toggle("", isOn: Binding<Bool>(
+                        get: { viewModel.state.isTaskDone },
+                        set: { viewModel.state.isTaskDone = $0 }
+                    ))
                     .toggleStyle(iOSCheckbox())
                 
                 Spacer()
@@ -80,14 +86,20 @@ public struct TaskScreenForm: View {
             .padding(.bottom, 24)
             
             TextField("Write a task",
-                      text: $viewModel.state.taskName,
+                      text: Binding<String>(
+                        get: { viewModel.state.taskName },
+                        set: { viewModel.state.taskName = $0 }
+                      ),
                       axis: .vertical)
                 .font(.system(size: 36, weight: .medium))
                 .lineLimit(2)
                 .padding(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
             
             TextField("Write a description",
-                      text: $viewModel.state.taskDescription,
+                      text: Binding<String>(
+                        get: { viewModel.state.taskDescription },
+                        set: { viewModel.state.taskDescription = $0 }
+                      ),
                       axis: .vertical)
                 .font(.system(size: 20, weight: .regular))
                 .lineLimit(5)
@@ -140,9 +152,6 @@ struct DropDownLabel: View {
 
 #Preview {
     NavigationView {
-        TaskScreen(
-            viewModel: TaskScreenViewModel(
-                id: nil,
-                dataSource: FakeTaskLocalDataSource()))
+        TaskScreen(id: nil)
     }
 }

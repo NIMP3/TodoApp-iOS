@@ -8,7 +8,7 @@
 import SwiftUI
 
 public struct TaskItem: View {
-    @State var task: Task
+    var task: Task
     var onDelete: (() -> Void)?
     var onToggle: ((Task) -> Void)?
     
