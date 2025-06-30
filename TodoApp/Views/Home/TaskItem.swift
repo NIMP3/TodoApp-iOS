@@ -53,13 +53,13 @@ public struct TaskItem: View {
             }
             .padding(EdgeInsets(top: 12, leading: 12, bottom: 8, trailing: 12))
             
-            if !task.isCompleted, let category = task.category?.rawValue {
-                Text(category)
+            if !task.isCompleted, let category = task.category {
+                Text(category.rawValue)
                     .font(.footnote)
                     .foregroundStyle(.white)
                     .fontWeight(.medium)
                     .padding(6)
-                    .background(.cyan)
+                    .background(Color(hex: category.hexColor))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding(6)
             }
