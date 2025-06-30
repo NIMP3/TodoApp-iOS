@@ -40,7 +40,7 @@ public struct TaskScreen: View {
         .padding(16)
         .onChange(of: viewModel.didSave, { _, newValue in
             guard newValue else { return }
-            viewModel.didSave = false
+            viewModel.reset()
             dismiss()
         })
         .onAppear {

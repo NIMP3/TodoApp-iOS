@@ -40,12 +40,17 @@ public struct HomeScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button{ }
-                label : {
+                Menu {
+                    Button("Delete All") {
+                        viewModel.deleteAllTasks()
+                    }
+                    .foregroundColor(.red)
+                } label: {
                     Image(systemName: "ellipsis")
                         .rotationEffect(.degrees(90))
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(Color.primary)
+                        .padding(.leading, 12)
                 }
             }
         }

@@ -37,6 +37,7 @@ public struct TaskItem: View {
                         Text(description)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .lineLimit(3)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -60,7 +61,7 @@ public struct TaskItem: View {
                     .padding(6)
                     .background(.cyan)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .padding(12)
+                    .padding(6)
             }
         }
         .frame(maxWidth: .infinity)

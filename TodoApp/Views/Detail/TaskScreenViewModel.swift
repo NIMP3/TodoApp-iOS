@@ -20,6 +20,7 @@ import Foundation
     }
 
     func loadData(id: String?) {
+        reset()
         guard let id = id else { return }
         self.id = id
         
@@ -50,5 +51,16 @@ import Foundation
         } catch {
             print("Error while \(isNew ? "adding" : "updating") task: \(error)")
         }
+    }
+
+    func reset() {
+        state.taskName = ""
+        state.taskDescription = ""
+        state.category = nil
+        state.isTaskDone = false
+        state.date = Date()
+
+        didSave = false
+        id = nil
     }
 }

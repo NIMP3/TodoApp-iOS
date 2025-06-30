@@ -58,5 +58,13 @@ import Combine
             print("Error when updating task: \(error.localizedDescription)")
         }
     }
+
+    func deleteAllTasks() {
+        do {
+            try dataSource.deleteAllTasks()
+        } catch {
+            print("Error when deleting all tasks: \(error.localizedDescription)")
+        }
+    }
     
 }

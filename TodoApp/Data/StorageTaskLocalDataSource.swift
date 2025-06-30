@@ -81,9 +81,15 @@ final class StorageTaskLocalDataSource: NSObject, TaskLocalDataSource {
     func deleteAllTasks() throws {
         let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TaskEntity.fetchRequest()
         let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        deleteRequest.resultType = .resultTypeObjectIDs
         
         try viewContext.performAndWait {
-            try viewContext.execute(deleteRequest)
+            let result = try viewContext.execute(deleteRequest) as? NSBatchDeleteResult
+            if let objectIDs = result?.result as? [NSManagedObjectID], !objectIDs.isEmpty {
+                let changes: [AnyHashable: Any] = [NSDeletedObjectsKey: objectIDs]
+                NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [viewContext])
+            }
+
             viewContext.reset()
         }
     }
